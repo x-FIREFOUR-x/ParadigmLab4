@@ -68,3 +68,21 @@ fun first_answer f list =
 
 first_answer (fn a => NONE) [1, 2, 3];
 first_answer (fn a => if a > 3 then SOME a else NONE) [2, 0, 3, 6, 5];
+
+
+    (*8*)
+fun all_answers f list =
+    let
+        fun fun_help list acc = 
+            case list of
+                [] => SOME acc
+                | hd::tl => case f(hd) of
+                                NONE => NONE
+                                | SOME v => fun_help tl (acc @ v)
+    in
+        fun_help list []
+    end;
+
+
+all_answers (fn a => if a = 2 then NONE else SOME[a]) [1, 2, 4];
+all_answers (fn a => if a = 0 then NONE else SOME[a]) [1, 2, 4];
