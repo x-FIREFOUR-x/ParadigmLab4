@@ -55,3 +55,16 @@ longest_capital
 val rev_string = String.implode o List.rev o String.explode;
 
 rev_string("Str");
+
+
+    (*7*)
+fun first_answer f list = 
+    case list of
+	    [] => raise NoAnswer
+        | hd :: tl => case f(hd) of
+		                SOME v => v
+		                | NONE => first_answer f tl;
+
+
+first_answer (fn a => NONE) [1, 2, 3];
+first_answer (fn a => if a > 3 then SOME a else NONE) [2, 0, 3, 6, 5];
