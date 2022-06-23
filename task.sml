@@ -125,7 +125,7 @@ fun check_pat (p: pattern) =
 	            | TupleP tup => List.foldl(fn (p,ps) => ps @ get_list_variables(p)) [] tup
 	            | ConstructorP(_,p) => get_list_variables(p)
 	            | _  => []
-                
+
         fun check_repeats(list: string list) =
             case list of
                 [] => true
@@ -138,3 +138,33 @@ fun check_pat (p: pattern) =
 
  val t10 = check_pat(TupleP [Variable "abc", Wildcard, ConstructorP("Str", TupleP [Variable "abc", UnitP]) ] );
  val t10 = check_pat(TupleP [Variable "abc", Wildcard, ConstructorP("Str", TupleP[UnitP]) ] );
+
+
+    (*11*)
+fun match (value, patern)   =
+     case (value, patern) of  
+        (_, Wildcard) => SOME []
+        | (Const v1, ConstP p1) => if v1 = p1 
+                                    then SOME [] 
+                                    else NONE
+        | (Unit, UnitP) => SOME []
+        | (Constructor (str, v1), ConstructorP (strP, p1)) => if str = strP 
+                                                                then match(v1, p1) 
+                                                                else NONE
+        | (Tuple tupV,TupleP tupP) => if List.length tupV = List.length tupP 
+                                        then case all_answers match(ListPair.zip(tupV, tupP)) of
+                                            SOME v1 => SOME v1
+                                            |_ => NONE
+                                        else NONE
+        | (_, Variable s) => SOME [(s, value)]
+        | (_, _) => NONE;
+
+val t11 = match(Unit, Wildcard);
+val t11 = match(Const 1, ConstP 1);
+val t11 = match(Const 1, ConstP 2);
+val t11 = match(Unit, UnitP);
+val t11 = match (Constructor("Str", Unit), ConstructorP("Str", UnitP));
+val t11 = match (Constructor("Str", Unit), ConstructorP("Str2", UnitP));
+val t11 = match (Constructor("Str", Unit), ConstructorP("Str2", Wildcard));
+val t11 = match (Tuple[Unit, Const 1], TupleP[UnitP, ConstP 1]);
+val t11 = match (Tuple[Unit, Const 0], TupleP[UnitP, ConstP 1]);
