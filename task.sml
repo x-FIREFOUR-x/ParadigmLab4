@@ -48,7 +48,10 @@ val longest_capitalized  =  longest_string1 o only_capitals;
 
 longest_capitalized(["adc", "ab", "abvf", "addc"]);
 longest_capitalized(["adc", "Ab", "abvf", "Addc"]);
-longest_capitalized(["adc", "Ab", "Abvf", "Addc"]);
+longest_capital   
 
 
- 
+    (*6*)
+val rev_string = String.implode o List.rev o String.explode;
+
+rev_string("Str");
