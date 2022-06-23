@@ -114,3 +114,27 @@ fun count_some_var(str: string, p: pattern) =
 val t9c = count_some_var("DDd", TupleP [Variable "abc", Wildcard, Wildcard, ConstructorP("Str", TupleP [Wildcard, UnitP]) ] );
 val t9c = count_some_var("abc", TupleP [Variable "abc", Wildcard, Wildcard, ConstructorP("Str", TupleP [Wildcard, UnitP]) ] );
 val t9c = count_some_var("abc", TupleP [Variable "abc", Wildcard, Wildcard, ConstructorP("Str", TupleP [Variable "abc", UnitP]) ] );
+
+
+    (*10*)
+fun check_pat (p: pattern) =
+    let 
+        fun get_list_variables(p: pattern) =
+	        case p of
+	            Variable x => [x]
+	            | TupleP tup => List.foldl(fn (p,ps) => ps @ get_list_variables(p)) [] tup
+	            | ConstructorP(_,p) => get_list_variables(p)
+	            | _  => []
+                
+        fun check_repeats(list: string list) =
+            case list of
+                [] => true
+                | hd::tl => if List.exists(fn a => a = hd) tl 
+                                then false 
+                                else check_repeats(tl)
+    in
+        check_repeats(get_list_variables(p))
+    end;
+
+ val t10 = check_pat(TupleP [Variable "abc", Wildcard, ConstructorP("Str", TupleP [Variable "abc", UnitP]) ] );
+ val t10 = check_pat(TupleP [Variable "abc", Wildcard, ConstructorP("Str", TupleP[UnitP]) ] );
