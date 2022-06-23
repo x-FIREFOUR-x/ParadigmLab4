@@ -1,3 +1,4 @@
+exception NoAnswer
 
     (*1*)
 fun only_capitals(list_str: string list) = 
@@ -40,3 +41,14 @@ val longest_string4 = longest_string_helper( fn(str1, str2)=> str2 > str1 );
 
 longest_string3(["adc", "ab", "abvf", "addc"]);
 longest_string4(["adc", "ab", "abvf", "addc"]);
+
+
+    (*5*)
+val longest_capitalized  =  longest_string1 o only_capitals;
+
+longest_capitalized(["adc", "ab", "abvf", "addc"]);
+longest_capitalized(["adc", "Ab", "abvf", "Addc"]);
+longest_capitalized(["adc", "Ab", "Abvf", "Addc"]);
+
+
+ 
