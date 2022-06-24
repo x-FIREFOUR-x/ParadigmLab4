@@ -4,7 +4,6 @@ use "hw03.sml";
 fun only_capitals(list_str: string list) = 
         List.filter(fn str => Char.isUpper(String.sub(str, 0))) list_str;
 
-val t1 = only_capitals(["gfggf", "Gsgsg", "Hdhhd"]);
 
 
     (*2*)
@@ -15,7 +14,6 @@ fun longest_string1(list_str: string list) =
                                         else str1
                 ) "" list_str;
 
-val t2 = longest_string1(["adc", "ab", "abvf", "addc"]);
 
 
     (*3*)
@@ -26,7 +24,6 @@ fun longest_string2(list_str: string list) =
                                         else str1
                 ) "" list_str;
 
-val t3 = longest_string2(["adc", "ab", "abvf", "addc"]);
 
 
     (*4*)
@@ -39,21 +36,16 @@ fun longest_string_helper f =
 val longest_string3 = longest_string_helper( fn(str1, str2) => str2 >= str1 );
 val longest_string4 = longest_string_helper( fn(str1, str2)=> str2 > str1 );
 
-val t4 = longest_string3(["adc", "ab", "abvf", "addc"]);
-val t4 = longest_string4(["adc", "ab", "abvf", "addc"]);
 
 
     (*5*)
 val longest_capitalized  =  longest_string1 o only_capitals;
 
-val t5 = longest_capitalized(["adc", "ab", "abvf", "addc"]);
-val t5 = longest_capitalized(["adc", "Ab", "abvf", "Addc"]);
 
 
     (*6*)
 val rev_string = String.implode o List.rev o String.explode;
 
-val t6 = rev_string("Str");
 
 
     (*7*)
@@ -64,9 +56,6 @@ fun first_answer f list =
 		                SOME v => v
 		                | NONE => first_answer f tl;
 
-
-(*first_answer (fn a => NONE) [1, 2, 3];*)
-val t7 = first_answer (fn a => if a > 3 then SOME a else NONE) [2, 0, 3, 6, 5];
 
 
     (*8*)
@@ -83,10 +72,6 @@ fun all_answers f list =
     end;
 
 
-val t8 = all_answers (fn a => if a = 2 then NONE else SOME[a]) [1, 2, 4];
-val t8 = all_answers (fn a => if a = 0 then NONE else SOME[a]) [1, 2, 4];
-
-
 
     (*9*)
 
@@ -94,26 +79,16 @@ val t8 = all_answers (fn a => if a = 0 then NONE else SOME[a]) [1, 2, 4];
 fun count_wildcards(p: pattern) = 
     g (fn v => 1) (fn v => 0) p
 
-val t9a = count_wildcards(ConstP 5);
-val t9a = count_wildcards(TupleP [Wildcard, ConstP 5, UnitP, Wildcard]);
-val t9a = count_wildcards(TupleP [Wildcard, Wildcard, ConstructorP("Str", TupleP [Wildcard, Wildcard, UnitP]) ] );
-
 
     (*9b*)
 fun count_wild_and_variable_lengths(p: pattern) =
      g (fn a => 1) (String.size) p;
-
-val t9b = count_wild_and_variable_lengths(TupleP [Wildcard, ConstructorP("Str", TupleP [Wildcard]) ] );
-val t9b = count_wild_and_variable_lengths(TupleP [Wildcard, ConstructorP("Str", TupleP [Wildcard, Variable "DD"]) ] );
 
 
     (*9c*)
 fun count_some_var(str: string, p: pattern) =
     g (fn a => 0) (fn b => if b = str then 1 else 0) p;
 
-val t9c = count_some_var("DDd", TupleP [Variable "abc", Wildcard, Wildcard, ConstructorP("Str", TupleP [Wildcard, UnitP]) ] );
-val t9c = count_some_var("abc", TupleP [Variable "abc", Wildcard, Wildcard, ConstructorP("Str", TupleP [Wildcard, UnitP]) ] );
-val t9c = count_some_var("abc", TupleP [Variable "abc", Wildcard, Wildcard, ConstructorP("Str", TupleP [Variable "abc", UnitP]) ] );
 
 
     (*10*)
@@ -135,36 +110,25 @@ fun check_pat (p: pattern) =
     in
         check_repeats(get_list_variables(p))
     end;
-
- val t10 = check_pat(TupleP [Variable "abc", Wildcard, ConstructorP("Str", TupleP [Variable "abc", UnitP]) ] );
- val t10 = check_pat(TupleP [Variable "abc", Wildcard, ConstructorP("Str", TupleP[UnitP]) ] );
+ 
 
 
     (*11*)
-fun match (value, patern)   =
+fun match (value, patern) =
      case (value, patern) of  
         (_, Wildcard) => SOME []
+        | (_, Variable s) => SOME [(s, value)]
+        | (Unit, UnitP) => SOME []
         | (Const v1, ConstP p1) => if v1 = p1 
                                     then SOME [] 
                                     else NONE
-        | (Unit, UnitP) => SOME []
-        | (Constructor (str, v1), ConstructorP (strP, p1)) => if str = strP 
+        | (Constructor(str, v1), ConstructorP(strP, p1)) => if str = strP 
                                                                 then match(v1, p1) 
                                                                 else NONE
-        | (Tuple tupV,TupleP tupP) => if List.length tupV = List.length tupP 
+        | (Tuple tupV, TupleP tupP) => if List.length tupV = List.length tupP 
                                         then case all_answers match(ListPair.zip(tupV, tupP)) of
                                             SOME v1 => SOME v1
                                             |_ => NONE
                                         else NONE
-        | (_, Variable s) => SOME [(s, value)]
-        | (_, _) => NONE;
+        | _ => NONE;
 
-val t11 = match(Unit, Wildcard);
-val t11 = match(Const 1, ConstP 1);
-val t11 = match(Const 1, ConstP 2);
-val t11 = match(Unit, UnitP);
-val t11 = match (Constructor("Str", Unit), ConstructorP("Str", UnitP));
-val t11 = match (Constructor("Str", Unit), ConstructorP("Str2", UnitP));
-val t11 = match (Constructor("Str", Unit), ConstructorP("Str2", Wildcard));
-val t11 = match (Tuple[Unit, Const 1], TupleP[UnitP, ConstP 1]);
-val t11 = match (Tuple[Unit, Const 0], TupleP[UnitP, ConstP 1]);
